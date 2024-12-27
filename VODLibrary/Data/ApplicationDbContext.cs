@@ -15,6 +15,8 @@ namespace VODLibrary.Data
 
         DbSet<VideoRecord> VideoRecords { get; set; }
 
+        private Category[] categories;
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
@@ -29,6 +31,32 @@ namespace VODLibrary.Data
                 .HasOne(v => v.Category)
                 .WithMany(c => c.Videos)
                 .HasForeignKey(v => v.CategoryId);
+
+            builder.Entity<VideoRecord>()
+                .HasOne(v => v.VideoOwner)
+                .WithMany()
+                .HasForeignKey(v => v.VideoOwnerId);
+
+            SeedCategories();
+
+            builder.Entity<Category>()
+                .HasData(categories);
+
+        }
+
+        private void SeedCategories()
+        {
+            categories = new Category[]
+            {
+                new Category { Id = 1, Name = "Music"} ,
+                new Category { Id = 2, Name = "Sports"},
+                new Category { Id = 3, Name = "Gaming"},
+                new Category { Id = 4, Name = "Entertainment"},
+                new Category { Id = 5, Name = "Education"},
+                new Category { Id = 6, Name = "Science and Technology"}
+
+
+            };
         }
     }
 }
