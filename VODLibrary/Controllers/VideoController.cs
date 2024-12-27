@@ -18,10 +18,22 @@ namespace VODLibrary.Controllers
             _dbContext = dbContext;
             _webHostEnvironment = webHostEnvironment;
         }
-        public IActionResult Index()
+        public async Task<IActionResult> Home()
         {
+            IEnumerable<VideoWindowViewModel> videos = await _dbContext
+                .VideoRecords
+                .Include(v => v.VideoOwner)
+                .Select(v => new VideoWindowViewModel()
+                {
+                    Id = v.Id,
+                    Title = v.Title,
+                    Uploaded = v.Uploaded,
+                    OwnerName = v.VideoOwner.UserName,
+                    VideoPath = v.VideoPath,
+                })
+                .ToListAsync();
 
-            return View();
+            return View(videos);
         }
 
         [HttpGet]
