@@ -88,8 +88,102 @@ namespace VODLibrary.Controllers
             await _dbContext.SaveChangesAsync();
 
             return RedirectToAction(nameof(Home));
+        }
+
+        public async Task<IActionResult> Mine()
+        {
+            IEnumerable<VideoWindowViewModel> videoCollection = await _dbContext
+                .VideoRecords
+                .Include(v => v.VideoOwner)
+                .Where(v => v.VideoOwnerId == User.FindFirstValue(ClaimTypes.NameIdentifier))
+                .Select(v => new VideoWindowViewModel()
+                {
+                    Id = v.Id,
+                    Title = v.Title,
+                    OwnerName = v.VideoOwner.UserName,
+                    Uploaded = v.Uploaded,
+                    ImagePath = v.ImagePath,
+
+                })
+                .ToListAsync();
+
+            return View(videoCollection);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Edit(int id)
+        {
+            VideoRecord? selectedVod = await _dbContext
+                .VideoRecords
+                .Where(v => v.Id == id && v.VideoOwnerId == User.FindFirstValue(ClaimTypes.NameIdentifier))
+                .FirstOrDefaultAsync();
+
+            if (selectedVod == null)
+            {
+                return BadRequest();
+            }
+
+            VideoEditFormModelView model = new VideoEditFormModelView()
+            {
+                Id = selectedVod.Id,
+                Title = selectedVod.Title,
+                Description = selectedVod.Description,
+                CategoryId = selectedVod.CategoryId,
+                ImagePath = selectedVod.ImagePath,
+            };
+
+            ViewBag.Categories = new SelectList(await _dbContext.Categories.ToListAsync(), "Id", "Name");
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [RequestSizeLimit(100_000_000)] // 100 MB
+        [RequestFormLimits(MultipartBodyLengthLimit = 100_000_000)]
+        public async Task<IActionResult> Edit(int id, VideoEditFormModelView model)
+        {
+
+            if (!ModelState.IsValid)
+            {
+                ViewBag.Categories = new SelectList(await _dbContext.Categories.ToListAsync(), "Id", "Name");
+                return View(model);
+            }
+
+            VideoRecord? selectedVod = await _dbContext
+                .VideoRecords
+                .Where(v => v.Id == id && v.VideoOwnerId == User.FindFirstValue(ClaimTypes.NameIdentifier))
+                .FirstOrDefaultAsync();
+
+            if (selectedVod == null)
+            {
+                return BadRequest();
+            }
+
+            selectedVod.Title = model.Title;
+            selectedVod.Description = model.Description;
+            selectedVod.CategoryId = model.CategoryId;
 
 
+            if (model.ThumbnailFile != null)
+            {
+                string uploadPath = Path.Combine(_webHostEnvironment.WebRootPath, "uploads");
+                Directory.CreateDirectory(uploadPath);
+
+                string thumbnailFileName = $"{Guid.NewGuid()}{Path.GetExtension(model.ThumbnailFile.FileName)}";
+                string thumbnailUploadPath = Path.Combine(uploadPath, thumbnailFileName);
+
+                using (FileStream stream = new FileStream(thumbnailUploadPath, FileMode.Create))
+                {
+                    await model.ThumbnailFile.CopyToAsync(stream);
+                }
+
+                selectedVod.ImagePath = $"/uploads/{thumbnailFileName}";
+
+            }
+
+            await _dbContext.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Mine));
         }
     }
 }

@@ -1,0 +1,38 @@
+﻿@model VideoEditFormModelView
+
+<h1>Edit Video</h1>
+
+<form asp-action="Edit" asp-controller="Video" method="post" enctype="multipart/form-data">
+    <input type="hidden" asp-for="Id" />
+
+    <div>
+        <label for="Title">Title:</label>
+        <input asp-for="Title" />
+        <span asp-validation-for="Title" class="text-danger"></span>
+    </div>
+
+    <div>
+        <label for="Description">Description:</label>
+        <textarea asp-for="Description" rows="5" cols="50"></textarea>
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+
+    <div>
+        <label for="CategoryId">Category:</label>
+        <select asp-for="CategoryId" asp-items="ViewBag.Categories"></select>
+        <span asp-validation-for="CategoryId" class="text-danger"></span>
+    </div>
+
+    <div>
+        <label for="ThumbnailFile">Current Thumbnail:</label>
+        <img src="@Model.ImagePath" alt="Current Thumbnail" width="250" />
+    </div>
+
+    <div>
+        <label for="ThumbnailFile">Upload New Thumbnail (optional):</label>
+        <input asp-for="ThumbnailFile" type="file" />
+        <span asp-validation-for="ThumbnailFile" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-success">Save Changes</button>
+</form>

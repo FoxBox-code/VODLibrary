@@ -8,6 +8,8 @@
             public const int TitleMinLength = 3;
 
             public const long MaxVideoTicks = 864000000000; // these ticks represent 24hours
+
+            public const int DescriptionMaxLength = 5000;
         }
 
         public static class ChategoryConstants

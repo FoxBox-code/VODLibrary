@@ -15,6 +15,9 @@ namespace VODLibrary.Data.Models
         [Required]
         public DateTime Uploaded { get; set; }
 
+        [StringLength(DescriptionMaxLength, ErrorMessage = "The description cannot be longer than 5000 charachters")]
+        public string? Description { get; set; }
+
         [Required]
         [Range(0, MaxVideoTicks, ErrorMessage = "Video must be between 0 or 24 hours")]
         public TimeSpan Length { get; set; }

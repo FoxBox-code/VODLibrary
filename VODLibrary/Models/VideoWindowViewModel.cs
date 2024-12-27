@@ -15,8 +15,8 @@ namespace VODLibrary.Models
         [Required]
         public DateTime Uploaded { get; set; }
 
-        [Required]
-        public string ImagePath { get; set; }
+
+        public string? ImagePath { get; set; }
 
     }
 }

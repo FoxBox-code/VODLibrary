@@ -1,6 +1,6 @@
 ﻿@model IEnumerable<VideoWindowViewModel>
 
-<h1>All Videos</h1>
+<h1>My Collection</h1>
 
 <div class="video-list">
     @foreach (var video in Model)
@@ -11,6 +11,8 @@
                 <h3>@video.Title</h3>
                 <p>Uploaded by: @video.OwnerName</p>
                 <p>Uploaded on: @video.Uploaded.ToString("dd/MM/yyyy")</p>
+
+                <a asp-action="Edit" asp-route-id="@video.Id" class="btn btn-primary">Edit</a>
             </div>
         </a>
     }
