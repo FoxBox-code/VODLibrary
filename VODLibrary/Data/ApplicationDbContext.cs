@@ -11,9 +11,9 @@ namespace VODLibrary.Data
         {
         }
 
-        DbSet<Category> Categories { get; set; }
+        public DbSet<Category> Categories { get; set; }
 
-        DbSet<VideoRecord> VideoRecords { get; set; }
+        public DbSet<VideoRecord> VideoRecords { get; set; }
 
         private Category[] categories;
 

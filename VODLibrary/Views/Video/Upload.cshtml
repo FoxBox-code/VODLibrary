@@ -1,0 +1,23 @@
+﻿@model VideoUploadViewModel
+
+<form asp-action="Upload" asp-controller="Video" method="post" enctype="multipart/form-data">
+    <div>
+        <label for="Title">Title:</label>
+        <input asp-for="Title" />
+        <span asp-validation-for="Title" class="text-danger"></span>
+    </div>
+
+    <div>
+        <label for="CategoryId">Category:</label>
+        <select asp-for="CategoryId" asp-items="ViewBag.Categories"></select>
+        <span asp-validation-for="CategoryId" class="text-danger"></span>
+    </div>
+
+    <div>
+        <label for="VideoFile">Video File:</label>
+        <input asp-for="VideoFile" type="file" />
+        <span asp-validation-for="VideoFile" class="text-danger"></span>
+    </div>
+
+    <button type="submit">Upload</button>
+</form>
