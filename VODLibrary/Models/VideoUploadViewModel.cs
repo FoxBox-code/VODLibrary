@@ -16,5 +16,9 @@ namespace VODLibrary.Models
         [DataType(DataType.Upload)]
         public IFormFile VideoFile { get; set; }
 
+        [Required(ErrorMessage = "Please select a image for your video")]
+        [DataType(DataType.Upload)]
+        public IFormFile ImageFile { get; set; }
+
     }
 }

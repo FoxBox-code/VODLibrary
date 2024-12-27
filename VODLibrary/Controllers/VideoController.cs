@@ -29,7 +29,7 @@ namespace VODLibrary.Controllers
                     Title = v.Title,
                     Uploaded = v.Uploaded,
                     OwnerName = v.VideoOwner.UserName,
-                    VideoPath = v.VideoPath,
+                    ImagePath = v.ImagePath,
                 })
                 .ToListAsync();
 
@@ -44,6 +44,8 @@ namespace VODLibrary.Controllers
         }
 
         [HttpPost]
+        [RequestSizeLimit(100_000_000)] // 100 MB
+        [RequestFormLimits(MultipartBodyLengthLimit = 100_000_000)]
         public async Task<IActionResult> Upload(VideoUploadViewModel model)
         {
             if (!ModelState.IsValid)
@@ -58,9 +60,18 @@ namespace VODLibrary.Controllers
             var fileName = $"{Guid.NewGuid()}{Path.GetExtension(model.VideoFile.FileName)}";
             var filePath = Path.Combine(uploadPath, fileName);
 
+
             using (var stream = new FileStream(filePath, FileMode.Create))
             {
                 await model.VideoFile.CopyToAsync(stream);
+            }
+
+            var thumbnailFileName = $"{Guid.NewGuid()}{Path.GetExtension(model.ImageFile.FileName)}";
+            string thumnailPath = Path.Combine(uploadPath, thumbnailFileName);
+
+            using (FileStream stream = new FileStream(thumnailPath, FileMode.Create))
+            {
+                await model.ImageFile.CopyToAsync(stream);
             }
 
             var video = new VideoRecord()
@@ -68,6 +79,7 @@ namespace VODLibrary.Controllers
                 Title = model.Title,
                 CategoryId = model.CategoryId,
                 VideoPath = $"/uploads/{fileName}",
+                ImagePath = $"/uploads/{thumbnailFileName}",
                 Uploaded = DateTime.Now,
                 VideoOwnerId = User.FindFirstValue(ClaimTypes.NameIdentifier)
             };
@@ -75,7 +87,7 @@ namespace VODLibrary.Controllers
             await _dbContext.VideoRecords.AddAsync(video);
             await _dbContext.SaveChangesAsync();
 
-            return RedirectToAction("Index");
+            return RedirectToAction(nameof(Home));
 
 
         }

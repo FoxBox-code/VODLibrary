@@ -288,6 +288,10 @@ namespace VODLibrary.Data.Migrations
                     b.Property<int>("Dislike")
                         .HasColumnType("int");
 
+                    b.Property<string>("ImagePath")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<TimeSpan>("Length")
                         .HasColumnType("time");
 

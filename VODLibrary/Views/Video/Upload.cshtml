@@ -19,5 +19,11 @@
         <span asp-validation-for="VideoFile" class="text-danger"></span>
     </div>
 
+    <div>
+        <label for="ImageFile">Thumbnail:</label>
+        <input asp-for="ImageFile" type="file" />
+        <span asp-validation-for="ImageFile" class="text-danger"></span>
+    </div>
+
     <button type="submit">Upload</button>
 </form>

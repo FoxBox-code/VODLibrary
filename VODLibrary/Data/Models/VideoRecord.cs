@@ -36,5 +36,7 @@ namespace VODLibrary.Data.Models
 
         public string VideoPath { get; set; } //this is the URL for the video that will be in the DataBase
 
+        public string ImagePath { get; set; } // this will provide thumbnail picture 
+
     }
 }
