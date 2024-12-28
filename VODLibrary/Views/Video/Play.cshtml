@@ -1,0 +1,25 @@
+﻿@model VideoPlayModelView
+
+<h1>@Model.Title</h1>
+
+
+<div>
+    <video controls width="640" height="360">
+        <source src="@Model.VideoPath" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+</div>
+
+<div>
+    <p>Uploaded by: @Model.OwnerName</p>
+    <p>Uploaded on: @Model.Uploaded.ToString("dd/MM/yyyy")</p>
+    <p>Views: @Model.Views</p>
+    <p>Likes: @Model.Likes</p>
+    <p>Dislikes: @Model.Dislikes</p>
+</div>
+
+<div>
+    <!-- Optional: Add Like/Dislike buttons -->
+    <button class="btn btn-success">Like</button>
+    <button class="btn btn-danger">Dislike</button>
+</div>

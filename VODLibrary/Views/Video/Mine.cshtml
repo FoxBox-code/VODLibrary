@@ -5,7 +5,7 @@
 <div class="video-list">
     @foreach (var video in Model)
     {
-        <a asp-action="Details" asp-route-id="@video.Id" class="video-item-link">
+        <a asp-action="Play" asp-route-id="@video.Id" class="video-item-link">
             <div class="video-item">
                 <img src="@video.ImagePath" alt="Thumbnail for @video.Title" width="250" />
                 <h3>@video.Title</h3>

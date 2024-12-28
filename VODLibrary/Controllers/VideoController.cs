@@ -185,5 +185,35 @@ namespace VODLibrary.Controllers
 
             return RedirectToAction(nameof(Mine));
         }
+
+        public async Task<IActionResult> Play(int Id)
+        {
+            VideoRecord? selectedVideo = await _dbContext
+                .VideoRecords
+                .Include(v => v.VideoOwner)
+                .FirstOrDefaultAsync(v => v.Id == Id);
+
+            if (selectedVideo == null)
+            {
+                return BadRequest();
+            }
+
+            selectedVideo.Views++;
+            await _dbContext.SaveChangesAsync();
+
+            VideoPlayModelView model = new VideoPlayModelView()
+            {
+                Id = selectedVideo.Id,
+                Title = selectedVideo.Title,
+                Uploaded = selectedVideo.Uploaded,
+                OwnerName = selectedVideo.VideoOwner.UserName,
+                VideoPath = selectedVideo.VideoPath,
+                Views = selectedVideo.Views,
+                Likes = selectedVideo.Likes,
+                Dislikes = selectedVideo.Dislike,
+            };
+
+            return View(model);
+        }
     }
 }
