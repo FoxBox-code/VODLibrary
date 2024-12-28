@@ -16,5 +16,11 @@
         {
             public const int CategoryNameMaxLength = 30;
         }
+
+        public static class CommentConstants
+        {
+            public const int CommentDescriptionMaxLength = 10000;
+        }
+
     }
 }

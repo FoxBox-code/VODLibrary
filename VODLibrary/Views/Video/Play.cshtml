@@ -1,6 +1,5 @@
 ﻿@model VideoPlayModelView
 
-<h1>@Model.Title</h1>
 
 
 <div>
@@ -9,6 +8,8 @@
         Your browser does not support the video tag.
     </video>
 </div>
+
+<h1>@Model.Title</h1>
 
 <div>
     <p>Uploaded by: @Model.OwnerName</p>
@@ -23,3 +24,5 @@
     <button class="btn btn-success">Like</button>
     <button class="btn btn-danger">Dislike</button>
 </div>
+
+

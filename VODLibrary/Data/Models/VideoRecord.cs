@@ -41,5 +41,7 @@ namespace VODLibrary.Data.Models
 
         public string ImagePath { get; set; } // this will provide thumbnail picture 
 
+        public ICollection<Comment> Comments { get; set; }
+
     }
 }
