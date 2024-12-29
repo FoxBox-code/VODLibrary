@@ -20,20 +20,27 @@ namespace VODLibrary.Controllers
         }
         public async Task<IActionResult> Home()
         {
-            IEnumerable<VideoWindowViewModel> videos = await _dbContext
-                .VideoRecords
-                .Include(v => v.VideoOwner)
-                .Select(v => new VideoWindowViewModel()
+
+
+            IEnumerable<VideoCategoryViewModel> categoryVidoes = await _dbContext
+                .Categories
+                .Select(c => new VideoCategoryViewModel()
                 {
-                    Id = v.Id,
-                    Title = v.Title,
-                    Uploaded = v.Uploaded,
-                    OwnerName = v.VideoOwner.UserName,
-                    ImagePath = v.ImagePath,
+                    Id = c.Id,
+                    CategoryTitle = c.Name,
+                    Videos = c.Videos.Select(v => new VideoWindowViewModel()
+                    {
+                        Id = v.Id,
+                        Title = v.Title,
+                        OwnerName = v.VideoOwner.UserName,
+                        Uploaded = v.Uploaded,
+                        ImagePath = v.ImagePath
+                    })
+                    .ToList()
                 })
                 .ToListAsync();
 
-            return View(videos);
+            return View(categoryVidoes);
         }
 
         [HttpGet]

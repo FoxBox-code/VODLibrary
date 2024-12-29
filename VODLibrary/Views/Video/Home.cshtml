@@ -1,17 +1,28 @@
-﻿@model IEnumerable<VideoWindowViewModel>
+﻿@model IEnumerable<VideoCategoryViewModel>
 
-<h1>All Videos</h1>
+<h1>Videos by Category</h1>
 
-<div class="video-list">
-    @foreach (var video in Model)
+@foreach (var category in Model)
+{
+    @if(category.Videos.Count() != 0)
     {
-        <a asp-action="Play" asp-route-id="@video.Id" class="video-item-link">
-            <div class="video-item">
-                <img src="@video.ImagePath" alt="Thumbnail for @video.Title" width="250" />
-                <h3>@video.Title</h3>
-                <p>Uploaded by: @video.OwnerName</p>
-                <p>Uploaded on: @video.Uploaded.ToString("dd/MM/yyyy")</p>
+        <div class="category">
+            <h2>@category.CategoryTitle</h2>
+
+            <div class="video-list">
+                @foreach (var video in category.Videos)
+                {
+                    <a asp-action="Play" asp-route-id="@video.Id" class="video-item-link">
+                        <div class="video-item">
+                            <img src="@video.ImagePath" alt="Thumbnail for @video.Title" width="250" />
+                            <h3>@video.Title</h3>
+                            <p>Uploaded by: @video.OwnerName</p>
+                            <p>Uploaded on: @video.Uploaded.ToString("dd/MM/yyyy")</p>
+                        </div>
+                    </a>
+                }
             </div>
-        </a>
+        </div>
     }
-</div>
+    
+}
