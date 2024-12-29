@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using VODLibrary.Data;
 using VODLibrary.Data.Models;
-using VODLibrary.Models;
+using VODLibrary.Models.Video;
 
 namespace VODLibrary.Controllers
 {

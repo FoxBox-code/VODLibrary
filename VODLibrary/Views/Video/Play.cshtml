@@ -25,4 +25,60 @@
     <button class="btn btn-danger">Dislike</button>
 </div>
 
+<div id="comments-section">
+    <h2>Comments</h2>
+    <ul id="comments-list">
+        <!-- Comments will be dynamically loaded here -->
+    </ul>
 
+    <textarea id="comment-description" rows="4" cols="50" placeholder="Write a comment..."></textarea>
+    <button id="submit-comment">Post Comment</button>
+</div>
+
+
+<script>
+    const videoId = @Model.Id; // Pass the video ID from the model
+
+    // Fetch and display comments
+    async function loadComments() {
+        const response = await fetch(`/api/Comments/${videoId}`);
+        const comments = await response.json();
+        const commentsList = document.getElementById('comments-list');
+        commentsList.innerHTML = '';
+
+        comments.forEach(comment => {
+            const listItem = document.createElement('li');
+            listItem.textContent = `${comment.userName}: ${comment.description}`;
+            commentsList.appendChild(listItem);
+        });
+    }
+
+    // Post a new comment
+    document.getElementById('submit-comment').addEventListener('click', async () => {
+        const description = document.getElementById('comment-description').value;
+        if (!description) {
+            alert('Comment cannot be empty!');
+            return;
+        }
+
+        const response = await fetch('/api/Comments', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                userName: '@User.Identity.Name', // Pass the logged-in user's name
+                description: description,
+                videoRecordId: videoId
+            })
+        });
+
+        if (response.ok) {
+            document.getElementById('comment-description').value = '';
+            loadComments(); // Reload comments after posting
+        } else {
+            alert('Failed to post comment!');
+        }
+    });
+
+    // Load comments on page load
+    loadComments();
+</script>

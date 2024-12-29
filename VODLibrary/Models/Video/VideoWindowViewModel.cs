@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace VODLibrary.Models
+namespace VODLibrary.Models.Video
 {
     public class VideoWindowViewModel
     {

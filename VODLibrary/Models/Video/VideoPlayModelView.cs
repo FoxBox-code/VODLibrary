@@ -1,4 +1,4 @@
-﻿namespace VODLibrary.Models
+﻿namespace VODLibrary.Models.Video
 {
     public class VideoPlayModelView
     {
