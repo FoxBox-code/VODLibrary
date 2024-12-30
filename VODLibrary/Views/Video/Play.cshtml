@@ -38,6 +38,7 @@
 
 <script>
         const videoId = @Model.Id; // Pass the video ID from the model
+
         async function loadComments() {
         const response = await fetch(`/api/Comments/${videoId}`);
         const comments = await response.json();
