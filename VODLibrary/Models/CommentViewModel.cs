@@ -16,5 +16,14 @@ namespace VODLibrary.Models
         public string Description { get; set; }
 
         public int VideoRecordId { get; set; }
+
+        [Required]
+        public DateTime Uploaded { get; set; }
+
+        public int Likes { get; set; }
+
+        public int DisLikes { get; set; }
+
+
     }
 }

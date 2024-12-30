@@ -17,6 +17,8 @@ namespace VODLibrary.Data
 
         public DbSet<Comment> Comments { get; set; }
 
+        public DbSet<Reply> Replies { get; set; }
+
         private Category[] categories;
 
         protected override void OnModelCreating(ModelBuilder builder)
@@ -31,6 +33,9 @@ namespace VODLibrary.Data
 
             builder.Entity<Comment>()
                 .HasKey(c => c.Id);
+
+            builder.Entity<Reply>()
+                .HasKey(r => r.Id);
 
             builder.Entity<VideoRecord>()
                 .HasOne(v => v.Category)
@@ -47,6 +52,13 @@ namespace VODLibrary.Data
                 .WithOne(c => c.VideoRecord)
                 .HasForeignKey(c => c.VideoRecordId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<Comment>()
+                .HasMany(c => c.Replies)
+                .WithOne(r => r.Comment)
+                .HasForeignKey(r => r.CommentId)
+                .OnDelete(DeleteBehavior.Cascade);
+
 
             SeedCategories();
 

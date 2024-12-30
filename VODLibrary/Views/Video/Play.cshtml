@@ -37,48 +37,100 @@
 
 
 <script>
-    const videoId = @Model.Id; // Pass the video ID from the model
-
-    // Fetch and display comments
-    async function loadComments() {
+        const videoId = @Model.Id; // Pass the video ID from the model
+        async function loadComments() {
         const response = await fetch(`/api/Comments/${videoId}`);
         const comments = await response.json();
         const commentsList = document.getElementById('comments-list');
-        commentsList.innerHTML = '';
+        commentsList.innerHTML = ''; // Clear existing comments
 
         comments.forEach(comment => {
+            // Create a comment item
             const listItem = document.createElement('li');
-            listItem.textContent = `${comment.userName}: ${comment.description}`;
+            listItem.dataset.commentId = comment.id;
+
+            // Comment text
+            listItem.innerHTML = `
+                <p><strong>${comment.userName}:</strong> ${comment.description}</p>
+                <button class="toggle-replies-btn" data-comment-id="${comment.id}">Show Replies</button>
+                <ul class="replies-list" data-comment-id="${comment.id}" style="display: none;"></ul>
+                <textarea class="reply-input" placeholder="Write a reply..." data-comment-id="${comment.id}"></textarea>
+                <button class="post-reply-btn" data-comment-id="${comment.id}">Post Reply</button>
+            `;
+
             commentsList.appendChild(listItem);
+        });
+
+        attachReplyEventHandlers(); // Attach event handlers for toggling and posting replies
+    }
+
+    function attachReplyEventHandlers() {
+        // Handle "Show Replies" button clicks
+        document.querySelectorAll('.toggle-replies-btn').forEach(button => {
+            button.addEventListener('click', async (event) => {
+                const commentId = event.target.dataset.commentId;
+                const repliesList = document.querySelector(`.replies-list[data-comment-id="${commentId}"]`);
+
+                if (repliesList.style.display === 'none') {
+                    if (!repliesList.dataset.loaded) {
+                        await loadReplies(commentId);
+                        repliesList.dataset.loaded = true;
+                    }
+                    repliesList.style.display = 'block';
+                    event.target.textContent = 'Hide Replies';
+                } else {
+                    repliesList.style.display = 'none';
+                    event.target.textContent = 'Show Replies';
+                }
+            });
+        });
+
+        // Handle "Post Reply" button clicks
+        document.querySelectorAll('.post-reply-btn').forEach(button => {
+            button.addEventListener('click', async (event) => {
+                const commentId = event.target.dataset.commentId;
+                const replyInput = document.querySelector(`.reply-input[data-comment-id="${commentId}"]`);
+                const description = replyInput.value;
+
+                if (!description) {
+                    alert('Reply cannot be empty!');
+                    return;
+                }
+
+                const response = await fetch('/api/Comments/replies', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        userName: '@User.Identity.Name', // Replace with logged-in user's name
+                        description: description,
+                        commentId: commentId
+                    })
+                });
+
+                if (response.ok) {
+                    replyInput.value = ''; // Clear the input
+                    await loadReplies(commentId); // Reload replies
+                } else {
+                    alert('Failed to post reply!');
+                }
+            });
         });
     }
 
-    // Post a new comment
-    document.getElementById('submit-comment').addEventListener('click', async () => {
-        const description = document.getElementById('comment-description').value;
-        if (!description) {
-            alert('Comment cannot be empty!');
-            return;
-        }
+    async function loadReplies(commentId) {
+        const response = await fetch(`/api/Comments/replies/${commentId}`);
+        const replies = await response.json();
+        const repliesList = document.querySelector(`.replies-list[data-comment-id="${commentId}"]`);
 
-        const response = await fetch('/api/Comments', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                userName: '@User.Identity.Name', // Pass the logged-in user's name
-                description: description,
-                videoRecordId: videoId
-            })
+        repliesList.innerHTML = ''; // Clear existing replies
+        replies.forEach(reply => {
+            const replyItem = document.createElement('li');
+            replyItem.innerHTML = `<strong>${reply.userName}:</strong> ${reply.description}`;
+            repliesList.appendChild(replyItem);
         });
-
-        if (response.ok) {
-            document.getElementById('comment-description').value = '';
-            loadComments(); // Reload comments after posting
-        } else {
-            alert('Failed to post comment!');
-        }
-    });
+    }
 
     // Load comments on page load
     loadComments();
+
 </script>

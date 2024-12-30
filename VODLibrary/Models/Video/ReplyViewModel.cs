@@ -1,9 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using static VODLibrary.DataConstants.ConstantsCharacteristics.CommentConstants;
 
-namespace VODLibrary.Data.Models
+namespace VODLibrary.Models.Video
 {
-    public class Comment
+    public class ReplyViewModel
     {
         public int Id { get; set; }
 
@@ -15,18 +15,14 @@ namespace VODLibrary.Data.Models
         [MaxLength(CommentDescriptionMaxLength)]
         public string Description { get; set; }
 
-        public int VideoRecordId { get; set; }
+        public int CommentId { get; set; }
 
-        public VideoRecord VideoRecord { get; set; }
-
-        public ICollection<Reply>? Replies { get; set; } = new List<Reply>();
-
-        public int RepliesCount => Replies?.Count ?? 0;
-
-        public DateTime Uploaded { get; set; } = DateTime.Now;
+        public DateTime Uploaded { get; set; }
 
         public int Likes { get; set; }
 
         public int DisLikes { get; set; }
+
+        public int VideoRecordId { get; set; }
     }
 }

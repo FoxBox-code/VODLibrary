@@ -41,7 +41,9 @@ namespace VODLibrary.Data.Models
 
         public string ImagePath { get; set; } // this will provide thumbnail picture 
 
-        public ICollection<Comment> Comments { get; set; }
+        public ICollection<Comment> Comments { get; set; } = new List<Comment>();
+
+        public int CommentsCount => Comments?.Count ?? 0;
 
     }
 }
