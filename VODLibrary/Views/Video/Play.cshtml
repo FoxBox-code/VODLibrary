@@ -1,7 +1,5 @@
 ﻿@model VideoPlayModelView
 
-
-
 <div>
     <video controls width="640" height="360">
         <source src="@Model.VideoPath" type="video/mp4">
@@ -12,17 +10,11 @@
 <h1>@Model.Title</h1>
 
 <div>
-    <p>Uploaded by: @Model.OwnerName</p>
-    <p>Uploaded on: @Model.Uploaded.ToString("dd/MM/yyyy")</p>
-    <p>Views: @Model.Views</p>
-    <p>Likes: @Model.Likes</p>
-    <p>Dislikes: @Model.Dislikes</p>
-</div>
-
-<div>
-    <!-- Optional: Add Like/Dislike buttons -->
-    <button class="btn btn-success">Like</button>
-    <button class="btn btn-danger">Dislike</button>
+    <p><strong>Uploaded by:</strong> @Model.OwnerName</p>
+    <p><strong>Uploaded on:</strong> @Model.Uploaded.ToString("dd/MM/yyyy")</p>
+    <p><strong>Views:</strong> @Model.Views</p>
+    <p><strong>Likes:</strong> @Model.Likes</p>
+    <p><strong>Dislikes:</strong> @Model.Dislikes</p>
 </div>
 
 <div id="comments-section">
@@ -35,24 +27,32 @@
     <button id="submit-comment">Post Comment</button>
 </div>
 
-
 <script>
-        const videoId = @Model.Id; // Pass the video ID from the model
+    const videoId = @Model.Id; // Pass the video ID from the model
 
-        async function loadComments() {
-        const response = await fetch(`/api/Comments/${videoId}`);
+    // Fetch and display comments
+    async function loadComments() {
+        const response = await fetch(`/api/comments/${videoId}`);
+        if (!response.ok) {
+            console.error('Failed to load comments');
+            return;
+        }
+
         const comments = await response.json();
         const commentsList = document.getElementById('comments-list');
         commentsList.innerHTML = ''; // Clear existing comments
 
         comments.forEach(comment => {
-            // Create a comment item
             const listItem = document.createElement('li');
             listItem.dataset.commentId = comment.id;
+
+            // Format the uploaded date
+            const uploadedDate = new Date(comment.uploaded).toLocaleDateString();
 
             // Comment text
             listItem.innerHTML = `
                 <p><strong>${comment.userName}:</strong> ${comment.description}</p>
+                <p><small>Uploaded on: ${uploadedDate}</small></p>
                 <button class="toggle-replies-btn" data-comment-id="${comment.id}">Show Replies</button>
                 <ul class="replies-list" data-comment-id="${comment.id}" style="display: none;"></ul>
                 <textarea class="reply-input" placeholder="Write a reply..." data-comment-id="${comment.id}"></textarea>
@@ -62,11 +62,63 @@
             commentsList.appendChild(listItem);
         });
 
-        attachReplyEventHandlers(); // Attach event handlers for toggling and posting replies
+        attachReplyEventHandlers(); // Attach event handlers for replies
     }
 
+    // Post a new comment
+    document.getElementById('submit-comment').addEventListener('click', async () => {
+        const description = document.getElementById('comment-description').value;
+
+        if (!description) {
+            alert('Comment cannot be empty!');
+            return;
+        }
+
+        const response = await fetch('/api/comments', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                userName: '@User.Identity.Name', // Replace with logged-in user's name
+                description: description,
+                videoRecordId: videoId,
+                uploaded: new Date().toISOString() // Pass the current date and time
+            })
+        });
+
+        if (response.ok) {
+            document.getElementById('comment-description').value = ''; // Clear the input
+            loadComments(); // Reload comments
+        } else {
+            alert('Failed to post comment!');
+        }
+    });
+
+    // Fetch and display replies
+    async function loadReplies(commentId) {
+        const response = await fetch(`/api/comments/replies/${commentId}`);
+        if (!response.ok) {
+            console.error(`Failed to load replies for comment ${commentId}`);
+            return;
+        }
+
+        const replies = await response.json();
+        const repliesList = document.querySelector(`.replies-list[data-comment-id="${commentId}"]`);
+        repliesList.innerHTML = ''; // Clear existing replies
+
+        replies.forEach(reply => {
+            const uploadedDate = new Date(reply.uploaded).toLocaleDateString();
+
+            const replyItem = document.createElement('li');
+            replyItem.innerHTML = `
+                <p><strong>${reply.userName}:</strong> ${reply.description}</p>
+                <p><small>Uploaded on: ${uploadedDate}</small></p>
+            `;
+            repliesList.appendChild(replyItem);
+        });
+    }
+
+    // Attach event handlers for replies
     function attachReplyEventHandlers() {
-        // Handle "Show Replies" button clicks
         document.querySelectorAll('.toggle-replies-btn').forEach(button => {
             button.addEventListener('click', async (event) => {
                 const commentId = event.target.dataset.commentId;
@@ -86,7 +138,6 @@
             });
         });
 
-        // Handle "Post Reply" button clicks
         document.querySelectorAll('.post-reply-btn').forEach(button => {
             button.addEventListener('click', async (event) => {
                 const commentId = event.target.dataset.commentId;
@@ -98,13 +149,14 @@
                     return;
                 }
 
-                const response = await fetch('/api/Comments/replies', {
+                const response = await fetch('/api/comments/replies', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         userName: '@User.Identity.Name', // Replace with logged-in user's name
                         description: description,
-                        commentId: commentId
+                        commentId: commentId,
+                        uploaded: new Date().toISOString() // Pass the current date and time
                     })
                 });
 
@@ -118,20 +170,6 @@
         });
     }
 
-    async function loadReplies(commentId) {
-        const response = await fetch(`/api/Comments/replies/${commentId}`);
-        const replies = await response.json();
-        const repliesList = document.querySelector(`.replies-list[data-comment-id="${commentId}"]`);
-
-        repliesList.innerHTML = ''; // Clear existing replies
-        replies.forEach(reply => {
-            const replyItem = document.createElement('li');
-            replyItem.innerHTML = `<strong>${reply.userName}:</strong> ${reply.description}`;
-            repliesList.appendChild(replyItem);
-        });
-    }
-
     // Load comments on page load
     loadComments();
-
 </script>

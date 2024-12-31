@@ -47,6 +47,8 @@ namespace VODLibrary.Controllers.Api
                 return BadRequest(ModelState);
             }
 
+            model.Uploaded = DateTime.Now;
+
             var comment = new Comment
             {
                 UserName = model.UserName,
@@ -105,7 +107,7 @@ namespace VODLibrary.Controllers.Api
                 UserName = replyModel.UserName,
                 Description = replyModel.Description,
                 CommentId = replyModel.CommentId,
-                Uploaded = replyModel.Uploaded,
+                Uploaded = replyModel.Uploaded == default ? DateTime.Now : replyModel.Uploaded, // Default to DateTime.Now
                 Likes = replyModel.Likes,
                 DisLikes = replyModel.DisLikes,
                 VideoRecordId = comment.VideoRecordId

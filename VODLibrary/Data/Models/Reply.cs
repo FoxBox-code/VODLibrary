@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 using static VODLibrary.DataConstants.ConstantsCharacteristics.CommentConstants;
 
 namespace VODLibrary.Data.Models
@@ -17,6 +18,7 @@ namespace VODLibrary.Data.Models
 
         public int CommentId { get; set; }
 
+        [JsonIgnore] // Ignore during serialization
         public Comment Comment { get; set; }
 
         public DateTime Uploaded { get; set; } = DateTime.Now;

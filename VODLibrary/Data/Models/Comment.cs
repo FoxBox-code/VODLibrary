@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 using static VODLibrary.DataConstants.ConstantsCharacteristics.CommentConstants;
 
 namespace VODLibrary.Data.Models
@@ -19,6 +20,7 @@ namespace VODLibrary.Data.Models
 
         public VideoRecord VideoRecord { get; set; }
 
+        [JsonIgnore] // Ignore during serialization
         public ICollection<Reply>? Replies { get; set; } = new List<Reply>();
 
         public int RepliesCount => Replies?.Count ?? 0;
